@@ -23,11 +23,11 @@ public class CustomLocaleResolver implements LocaleResolver {
 
     private static final String LANG_PARAM = "lang";
     private static final String COOKIE_NAME = "LOCALE_LANG";
-    private static final String SESSION_ATTRIBUTE_NAME = "SESSION_LOCALE";
+    private static final String SESSION_ATTRIBUTE_NAME = "LOCALE_LANG";
     private static final Locale DEFAULT_LOCALE = Locale.ENGLISH;
 
     // 지원하는 언어 목록
-    private static final List<Locale> supportedLocales = List.of(
+    private static final List<Locale> SUPPORTED_LOCALES = List.of(
             Locale.of("en"), // 영어
             Locale.of("ko"), // 한국어
             Locale.of("zh"), // 중국어
@@ -35,7 +35,7 @@ public class CustomLocaleResolver implements LocaleResolver {
             // ... fr, de(독일어), es(스페인어), tl(필리핀 타갈로그어), vi(베트남어), id(인도네시아어), ar(아랍어)
             // ... th(태국어), it(이탈리아어), ... ISO-639-1 두 자리 언어 코드
     );
-    private static final Set<String> supportedLocaleLanguages = supportedLocales.stream()
+    private static final Set<String> SUPPORTED_LOCALE_LANGUAGES = SUPPORTED_LOCALES.stream()
             .map(Locale::getLanguage)
             .collect(Collectors.toSet());
 
@@ -52,7 +52,7 @@ public class CustomLocaleResolver implements LocaleResolver {
     }
 
     public static boolean supportsLanguage(String localeLanguageCode) {
-        return supportedLocaleLanguages.contains(localeLanguageCode);
+        return SUPPORTED_LOCALE_LANGUAGES.contains(localeLanguageCode);
     }
 
     @Override
@@ -80,7 +80,7 @@ public class CustomLocaleResolver implements LocaleResolver {
         // 세션과 쿠키에 locale 저장
         request.getSession().setAttribute(SESSION_ATTRIBUTE_NAME, locale);
         Cookie localeLangCookie = new Cookie(COOKIE_NAME, locale.getLanguage());
-        localeLangCookie.setMaxAge(3600 * 24 * 30);  // 30일 간 유지
+        localeLangCookie.setMaxAge(3600 * 24 * 30);  // 30일 간 유지하는 예시
         localeLangCookie.setPath("/");
         response.addCookie(localeLangCookie);
     }
@@ -90,7 +90,7 @@ public class CustomLocaleResolver implements LocaleResolver {
         String langParam = request.getParameter(LANG_PARAM);
         if (StringUtils.hasText(langParam)) {
             Locale locale = Locale.of(langParam);
-            if (supportedLocales.contains(locale)) {
+            if (SUPPORTED_LOCALES.contains(locale)) {
                 return Optional.of(locale);
             }
         }
@@ -100,7 +100,7 @@ public class CustomLocaleResolver implements LocaleResolver {
     private Optional<Locale> fromSession() {
         HttpServletRequest request = threadRequest.get();
         Locale sessionLocale = (Locale) request.getSession().getAttribute(SESSION_ATTRIBUTE_NAME);
-        if (sessionLocale != null && supportedLocales.contains(sessionLocale)) {
+        if (sessionLocale != null && SUPPORTED_LOCALES.contains(sessionLocale)) {
             return Optional.of(sessionLocale);
         }
         return Optional.empty();
@@ -115,7 +115,7 @@ public class CustomLocaleResolver implements LocaleResolver {
                                 .map(Cookie::getValue)
                                 .findFirst()
                 );
-        if (cookieLocale.isPresent() && supportedLocaleLanguages.contains(cookieLocale.get())) {
+        if (cookieLocale.isPresent() && SUPPORTED_LOCALE_LANGUAGES.contains(cookieLocale.get())) {
             return cookieLocale.map(Locale::of);
         }
         return Optional.empty();
@@ -134,7 +134,7 @@ public class CustomLocaleResolver implements LocaleResolver {
         // 이 메서드는 절대 null 또는 빈 목록을 반환하지 않음. (시스템 기본값을 포함하기 때문.)
         List<Locale> requestLocales = Collections.list(request.getLocales());
         for (Locale requestLocale : requestLocales) {
-            if (supportedLocaleLanguages.contains(requestLocale.getLanguage())) {
+            if (SUPPORTED_LOCALE_LANGUAGES.contains(requestLocale.getLanguage())) {
                 return Optional.of(requestLocale);
             }
         }

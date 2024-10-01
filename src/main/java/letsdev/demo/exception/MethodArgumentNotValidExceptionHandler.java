@@ -44,7 +44,6 @@ public class MethodArgumentNotValidExceptionHandler {
                 message,
                 request.getRequestURI()
         );
-
         return ResponseEntity
                 .badRequest()
                 .body(body);

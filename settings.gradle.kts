@@ -1,1 +1,1 @@
-rootProject.name = "demo-dto-validation-message-localization"
+rootProject.name = "demo-validation-message-localization"
