@@ -1,0 +1,8 @@
+spring:
+  application.name: demo-dto-validation-message-localization
+#  web:
+#    locale: en_US
+#    locale-resolver: accept-header
+#  messages:
+#    basename: classpath:/CustomValidationMessages
+#    encoding: UTF-8
