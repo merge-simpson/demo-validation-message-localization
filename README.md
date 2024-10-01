@@ -5,7 +5,7 @@
 
 # Locale 인식 우선순위
 
-이 예시 프로젝트에서 다음 항목은 서버가 지원하는 언어 목록에 해당할 때만 반영됩니다.
+이 예시 프로젝트에서 다음 항목은 서버가 지원하는 언어 목록에 해당할 때만 선택됩니다.
 
 1. lang 파라미터 (일반적인 언어 파라미터 이름)
    - `lang=ko` 등 URL 파라미터로 로케일 언어를 선택합니다.
@@ -13,10 +13,10 @@
    - 세션과 쿠키에 저장할 때는 서버 지원 언어 목록이 아니더라도 입력된 대로 저장됩니다.
    - 세션과 쿠키에 저장할 때는 서버 지원 언어 목록이 아니면, 저장만 되고 로케일은 다음 순위에 있는 항목들로 선택됩니다.
 2. 세션 "LOCALE_LANG" (커스텀된 세션 속성 이름)
-    - 이 방식은 필수가 아니며, 예시를 위해 포함되었습니다.
+    - 이 방식은 필수가 아니며, 예시를 위해 포함하였습니다.
     - 이 예시 프로젝트에서 이 세션 항목은 다른 기능을 통해 추가되지 않고, `lang` 파라미터가 있을 때만 추가됩니다.
 3. 쿠키 "LOCALE_LANG" (커스텀된 쿠키 이름)
-    - 이 방식은 필수가 아니며, 예시를 위해 포함되었습니다.
+    - 이 방식은 필수가 아니며, 예시를 위해 포함하였습니다.
     - 이 예시 프로젝트에서 이 쿠키 항목은 다른 기능을 통해 추가되지 않고, `lang` 파라미터가 있을 때만 추가됩니다.
     - 예시 프로젝트에서 `max-age`는 30일로 하였습니다.
 4. Accept-Language 헤더
@@ -74,7 +74,7 @@ _(0 ≤ `q` ≤ 1)_
 
 ## Validation 우선순위
 
-한 필드에 대해 여러 유효성 필드 에러(validation field error)가 발생하면, 유효성 필드 에러 간 우선순위는 다음과 같습니다.
+한 필드에 대해 여러 유효성 필드 에러(validation field error)가 발생하면, 이 에러들 간 우선순위는 다음과 같습니다.
 `priority` 값이 낮을수록 높은 우선순위를 갖습니다.
 
 ```java
@@ -104,10 +104,10 @@ private int getPriority(FieldError error) {
 ## 일부만 번역된 언어
 
 서버가 지원하는 언어 목록에 있는 로케일이더라도 만약 일부 메시지만 번역되었다면, 번역되지 않은 메시지는
-`Accept-Language` 헤더 등에 있던 다음 선호 언어가 아니라 애플리케이션 기본 로케일인 `en` 메시지로 반환됩니다.
+`Accept-Language` 헤더 등에 있던 다음 선호 언어가 아니라 애플리케이션 기본 로케일인 `en` 메시지를 반환합니다.
 다국어 메시지 소스를 다루는 리졸버(resolver)의 기본 동작 때문입니다.
 
-만약 `lang` 파라미터 없이, `Accept-Language` 헤더의 내용이 `zh-CN,ja;q=0.9`로 도착했다면
+만약 `lang` 파라미터가 없는 요청에서, `Accept-Language` 헤더의 내용이 `zh-CN,ja;q=0.9`로 도착한다면
 메시지 반환 흐름은 다음과 같습니다.
 
 - 서버 지원 언어 목록에 `zh`가 있기 때문에 스레드 로케일에 `zh`가 담깁니다.
@@ -116,11 +116,11 @@ private int getPriority(FieldError error) {
 - 메시지 리졸버는 `zh` 속성이 제공하지 않는 메시지는 이 애플리케이션의 기본 로케일인 `en` 메시지로 출력합니다.
 - 이 동안 메시지 리졸버와 스레드 로케일은 사용자가 제공한 `ja`가 두 번째 선호도를 갖고 있었다는 것을 기억하지 않습니다.
 
-# Example Request
+# Example Requests
 
 ## 기본 값
 
-- 언어 코드를 작성하지 않았을 때 영어로 validation 메시지가 옵니다.
+- 언어 코드를 작성하지 않았을 때 영어로 유효성 메시지가 옵니다.
   - URL: http://localhost:8080/sign-up
   - Method: `POST`
   - Request Body (JSON)
@@ -153,7 +153,7 @@ private int getPriority(FieldError error) {
 
 요청 및 응답 예시
 
-- `lang=ko` 파라미터를 담아서 보낸 요청은 validation 메시지가 한국어로 옵니다.
+- `lang=ko` 파라미터를 담아서 보낸 요청은 유효성 메시지가 한국어(`ko`)로 옵니다.
   - URL: http://localhost:8080/sign-up?lang=ko
   - Method: `POST`
       <details>
@@ -180,7 +180,7 @@ private int getPriority(FieldError error) {
     }
     ```
 
-- `lang=fr`(지원 언어가 아님) 파라미터를 담아서 보낸 요청은 validation 메시지가 기본 언어인 영어로 옵니다.
+- `lang=fr`(지원 언어가 아님) 파라미터를 담아서 보낸 요청은 유효성 메시지가 기본 언어인 영어로 옵니다.
   - URL: http://localhost:8080/sign-up?lang=fr
   - Method: `POST`
       <details>
@@ -219,7 +219,8 @@ private int getPriority(FieldError error) {
 
 ## 언어 및 지역에 따른 Accept-Language 헤더와 우선순위
 
-`lang` 파라미터가 없거나 지원 언어가 아니고, 세션과 쿠키에 저장된 로케일 언어가 없거나 
+`lang` 파라미터가 없거나 지원 언어가 아니고, 세션과 쿠키에 저장된 로케일 언어가 없거나 지원 언어가 아니면
+`Accept-Language` 헤더에서 선호도가 높은 순으로 지원 언어를 찾습니다.
 
 지원 언어 목록
 
@@ -256,7 +257,7 @@ private int getPriority(FieldError error) {
       > `...`은 생략된 JSON 필드를 나타냅니다.
 
 - 앞 목록이 지원 언어가 아니고 뒤 목록에 지원 언어가 있다면,
-  지원언어 중 가장 선호도(`q`)가 높은 언어로 validation 메시지를 응답합니다.
+  지원언어 중 가장 선호도(`q`)가 높은 언어로 유효성 메시지를 응답합니다.
     - URL: http://localhost:8080/sign-up
     - Method: `POST`
     - Accept-Language: `de-DE,de;q=0.9,ko;q=0.8`
@@ -281,7 +282,7 @@ private int getPriority(FieldError error) {
       ```
       > `...`은 생략된 JSON 필드를 나타냅니다.
 
-- 모든 목록이 지원 언어가 아니면, 기본 언어인 영어로 validation 메시지를 응답합니다.
+- 모든 목록이 지원 언어가 아니면, 기본 언어인 영어로 유효성 메시지를 응답합니다.
     - URL: http://localhost:8080/sign-up
     - Method: `POST`
     - Accept-Language: `de-DE,de;q=0.9,fr;q=0.8`
@@ -306,7 +307,8 @@ private int getPriority(FieldError error) {
       ```
       > `...`은 생략된 JSON 필드를 나타냅니다.
 
-- 첫 번째 항목이 지원 언어지만 국가 코드를 포함할 때도 첫 번째 항목의 언어를 잘 파싱하여 validation 메시지를 응답합니다.
+- 첫 번째 항목이 지원 언어이면서 언어 코드만 있지 않고 국가 코드를 포함할 때도,
+  첫 번째 항목의 로케일 언어를 인식하여 유효성 메시지를 응답합니다.
     - URL: http://localhost:8080/sign-up
     - Method: `POST`
     - Accept-Language: `en-US,de;q=0.9,ko;q=0.8`
@@ -331,9 +333,35 @@ private int getPriority(FieldError error) {
       ```
       > `...`은 생략된 JSON 필드를 나타냅니다.
 
-- 정렬되어 있지 않아도 우선순위를 잘 해석하여,
-  서버가 지원하는 언어 중 우선순위가 가장 높은 언어로 validation 메시지를 응답합니다.
+- 정렬되어 있지 않아도 선호도에 따라,
+  서버가 지원하는 언어 중 선호도가 가장 높은 언어로 유효성 메시지를 응답합니다.
     - URL: http://localhost:8080/sign-up
+    - Method: `POST`
+    - Accept-Language: `en-US;q=0.7,de;q=0.9,ko;q=0.8`
+        <details>
+          <summary>Request Body (JSON)</summary>
+
+        ```json
+        {
+          "username": "",
+          "password": "InputPassPhrase",
+          "nickname": "John"
+        }
+        ```
+
+        </details>
+    - Response Body (Example)
+      ```json
+      {
+        "message": "사용자 이름을 입력하세요.",
+        "...": ""
+      }
+      ```
+      > `...`은 생략된 JSON 필드를 나타냅니다.
+      
+- `lang` 파라미터가 지원 언어가 아닐 때는 무시되며, `Accept-Language` 헤더에서
+  서버가 지원하는 언어 중 선호도가 가장 높은 언어로 유효성 메시지를 응답합니다.
+    - URL: http://localhost:8080/sign-up?lang=fr
     - Method: `POST`
     - Accept-Language: `en-US;q=0.7,de;q=0.9,ko;q=0.8`
         <details>
